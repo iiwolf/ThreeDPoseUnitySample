@@ -179,7 +179,7 @@ public class ThreeDPoseScript : MonoBehaviour
         jointPoints[PositionIndex.lEye.Int()].Transform = anim.GetBoneTransform(HumanBodyBones.LeftEye);
         jointPoints[PositionIndex.rEar.Int()].Transform = anim.GetBoneTransform(HumanBodyBones.Head);
         jointPoints[PositionIndex.rEye.Int()].Transform = anim.GetBoneTransform(HumanBodyBones.RightEye);
-        jointPoints[PositionIndex.Nose.Int()].Transform = Nose.transform;
+        // jointPoints[PositionIndex.Nose.Int()].Transform = Nose.transform;
 
         // Right Leg
         jointPoints[PositionIndex.rThighBend.Int()].Transform = anim.GetBoneTransform(HumanBodyBones.RightUpperLeg);
@@ -232,12 +232,14 @@ public class ThreeDPoseScript : MonoBehaviour
             if (jointPoint.Transform != null)
             {
                 jointPoint.InitRotation = jointPoint.Transform.rotation;
+
+                if (jointPoint.Child != null)
+                {
+                    jointPoint.Inverse = GetInverse(jointPoint, jointPoint.Child);
+                }
             }
 
-            if (jointPoint.Child != null)
-            {
-                jointPoint.Inverse = GetInverse(jointPoint, jointPoint.Child);
-            }
+
         }
         initPosition = jointPoints[PositionIndex.hip.Int()].Transform.position;
         var forward = TriangleNormal(jointPoints[PositionIndex.hip.Int()].Transform.position, jointPoints[PositionIndex.lThighBend.Int()].Transform.position, jointPoints[PositionIndex.rThighBend.Int()].Transform.position);
@@ -245,8 +247,8 @@ public class ThreeDPoseScript : MonoBehaviour
 
         // For Head Rotation
         jointPoints[PositionIndex.head.Int()].InitRotation = jointPoints[PositionIndex.head.Int()].Transform.rotation;
-        var gaze = jointPoints[PositionIndex.Nose.Int()].Transform.position - jointPoints[PositionIndex.head.Int()].Transform.position;
-        jointPoints[PositionIndex.head.Int()].Inverse = Quaternion.Inverse(Quaternion.LookRotation(gaze));
+        // var gaze = jointPoints[PositionIndex.Nose.Int()].Transform.position - jointPoints[PositionIndex.head.Int()].Transform.position;
+        // jointPoints[PositionIndex.head.Int()].Inverse = Quaternion.Inverse(Quaternion.LookRotation(gaze));
 
         jointPoints[PositionIndex.lHand.Int()].InitRotation = jointPoints[PositionIndex.lHand.Int()].Transform.rotation;
         jointPoints[PositionIndex.lHand.Int()].Inverse = Quaternion.Inverse(Quaternion.LookRotation(jointPoints[PositionIndex.lThumb2.Int()].Transform.position - jointPoints[PositionIndex.lMid1.Int()].Transform.position));
@@ -358,10 +360,10 @@ public class ThreeDPoseScript : MonoBehaviour
         }
         
         // Head Rotation
-        var gaze = jointPoints[PositionIndex.Nose.Int()].Pos3D - jointPoints[PositionIndex.head.Int()].Pos3D;
-        var f = TriangleNormal(jointPoints[PositionIndex.Nose.Int()].Pos3D, jointPoints[PositionIndex.rEar.Int()].Pos3D, jointPoints[PositionIndex.lEar.Int()].Pos3D);
-        var head = jointPoints[PositionIndex.head.Int()];
-        head.Transform.rotation = Quaternion.LookRotation(gaze, f) * head.Inverse * head.InitRotation;
+        // var gaze = jointPoints[PositionIndex.Nose.Int()].Pos3D - jointPoints[PositionIndex.head.Int()].Pos3D;
+        // var f = TriangleNormal(jointPoints[PositionIndex.Nose.Int()].Pos3D, jointPoints[PositionIndex.rEar.Int()].Pos3D, jointPoints[PositionIndex.lEar.Int()].Pos3D);
+        // var head = jointPoints[PositionIndex.head.Int()];
+        // head.Transform.rotation = Quaternion.LookRotation(gaze, f) * head.Inverse * head.InitRotation;
 
         // Wrist rotation (Test code)
         var lf = TriangleNormal(jointPoints[PositionIndex.lHand.Int()].Pos3D, jointPoints[PositionIndex.lMid1.Int()].Pos3D, jointPoints[PositionIndex.lThumb2.Int()].Pos3D);
@@ -464,8 +466,9 @@ public class ThreeDPoseScript : MonoBehaviour
         var cEar = (jointPoints[PositionIndex.rEar.Int()].Now3D + jointPoints[PositionIndex.lEar.Int()].Now3D) / 2f;
         var hv = cEar - jointPoints[PositionIndex.neck.Int()].Now3D;
         var nhv = Vector3.Normalize(hv);
-        var nv = jointPoints[PositionIndex.Nose.Int()].Now3D - jointPoints[PositionIndex.neck.Int()].Now3D;
-        jointPoints[PositionIndex.head.Int()].Now3D = jointPoints[PositionIndex.neck.Int()].Now3D + nhv * Vector3.Dot(nhv, nv);
+        // var nv = jointPoints[PositionIndex.Nose.Int()].Now3D - jointPoints[PositionIndex.neck.Int()].Now3D;
+        // jointPoints[PositionIndex.head.Int()].Now3D = jointPoints[PositionIndex.neck.Int()].Now3D + nhv * Vector3.Dot(nhv, nv);
+        
         // Calculate spine location
         jointPoints[PositionIndex.spine.Int()].Now3D = jointPoints[PositionIndex.abdomenUpper.Int()].Now3D;
 
